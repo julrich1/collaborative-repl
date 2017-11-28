@@ -1,3 +1,5 @@
+const PORT = process.env.PORT || 8000;
+
 const express = require("express");
 const app = express();
 const http = require("http").Server(app);
@@ -55,8 +57,8 @@ io.on("connection", (socket) => {
   });
 });
 
-http.listen(8000, () => {
-  console.log("Listening on port 8000");
+http.listen(PORT, () => {
+  console.log("Listening on port ", PORT);
 });
 
 // function convertKey(key) {
