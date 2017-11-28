@@ -19,15 +19,14 @@ socket.on("codeTextInit", (text) => {
 });
 
 socket.on("codeTextUpdate", (text) => {
-  const cursorStart = codeText.selectionStart;
-  const cursorEnd = codeText.selectionEnd;
-  
   codeText.value = text;
-
-  codeText.selectionStart = cursorStart;
-  codeText.selectionEnd = cursorEnd;
 });
 
 socket.on("runResults", (resultText) => {
   runText.value = resultText;
 });
+
+setInterval(() => {
+  codeText.value = codeText.value += "w";
+  socket.emit("codeTextChange", codeText.value);  
+}, 500);

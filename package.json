@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "nodemonConfig": {
+    "ignore": ["output/*"],
+    "delay": "2500"
+  },
   "dependencies": {
     "express": "^4.16.2",
     "socket.io": "^2.0.4"
