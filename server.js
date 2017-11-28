@@ -17,11 +17,14 @@ io.on("connection", (socket) => {
 
   socket.emit("codeTextInit", (codeText));
 
-  socket.on("codeTextChange", (newText) => {
-    codeText = newText;
+  socket.on("codeTextChange", (textData) => {
+    updateText(textData);
 
-    socket.broadcast.emit("codeTextUpdate", codeText);
-    console.log(codeText);
+    const newTextData = { text: codeText, updatePos: textData.cursorPos };
+
+    console.log(newTextData);
+    socket.broadcast.emit("codeTextUpdate", newTextData);
+    console.log(codeText, codeText.length);
   });
 
   socket.on("run", () => {
@@ -55,3 +58,24 @@ io.on("connection", (socket) => {
 http.listen(8000, () => {
   console.log("Listening on port 8000");
 });
+
+// function convertKey(key) {
+//   if (key === "Backspace") {
+//     return String.fromCharCode(8);
+//   }
+
+//   return key;
+// }
+
+function updateText(textData) {
+  console.log("textData: ", textData.key, textData.cursorPos);
+  // textData.key = convertKey(textData.key);
+
+  if (textData.key === "Backspace")
+    codeText = codeText.slice(0, textData.cursorPos) + codeText.slice(textData.cursorPos + 1);
+  else if (textData.key === "Enter") {
+    codeText = codeText.slice(0, textData.cursorPos) + "\n" + codeText.slice(textData.cursorPos);
+  }
+  else if (textData.key.length <= 1)
+    codeText = codeText.slice(0, textData.cursorPos) + textData.key + codeText.slice(textData.cursorPos);
+}

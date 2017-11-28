@@ -4,10 +4,13 @@ const codeText = document.querySelector("#codeText");
 const runText = document.querySelector("#runText");
 const runButton = document.querySelector("button");
 
-codeText.addEventListener("keyup", () => {
-  console.log("On change");
-  socket.emit("codeTextChange", codeText.value);
-});
+// codeText.addEventListener("keyup", (key) => {
+//   // console.log("On change");
+//   // const cursorStart = codeText.cursorStart;
+//   // const textData = { key: key, cursorPos: cursorStart }; 
+
+//   // socket.emit("codeTextChange", textData);
+// });
 
 runButton.addEventListener("click", () => {
   console.log("Run clicked");
@@ -27,6 +30,8 @@ socket.on("runResults", (resultText) => {
 });
 
 setInterval(() => {
-  codeText.value = codeText.value += "w";
-  socket.emit("codeTextChange", codeText.value);  
+  const key = String.fromCharCode(Math.floor(Math.random() * (90 - 65 + 1)) + 65);
+  
+  const textData = { key: key, cursorPos: 0 };   
+  socket.emit("codeTextChange", textData);  
 }, 500);
