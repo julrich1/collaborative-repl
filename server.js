@@ -22,7 +22,15 @@ io.on("connection", (socket) => {
   socket.on("codeTextChange", (textData) => {
     updateText(textData);
 
-    const newTextData = { text: codeText, updatePos: textData.cursorPos };
+    //To-Do: Return correct cursor POS from function
+    let newTextData;
+
+    if (textData.key === "Backspace") {
+      newTextData = { text: codeText, updatePos: textData.cursorPos - 1};  
+    }
+    else {
+      newTextData = { text: codeText, updatePos: textData.cursorPos };
+    }
 
     console.log(newTextData);
     socket.broadcast.emit("codeTextUpdate", newTextData);
