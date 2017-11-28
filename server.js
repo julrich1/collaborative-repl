@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
     let newTextData;
 
     if (textData.key === "Backspace") {
-      newTextData = { text: codeText, updatePos: textData.cursorPos - 1};  
+      newTextData = { text: codeText, updatePos: textData.cursorPos, backspace: true };  
     }
     else {
       newTextData = { text: codeText, updatePos: textData.cursorPos };

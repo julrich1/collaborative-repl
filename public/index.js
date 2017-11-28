@@ -70,7 +70,8 @@ socket.on("codeTextUpdate", (textData) => {
 
   codeText.value = textData.text;
 
-  if (textData.updatePos < cursorStart) { cursorStart++; cursorEnd++; }
+  if (textData.updatePos < cursorStart && textData.backspace !== true) { cursorStart++; cursorEnd++; }
+  if (textData.updatePos < cursorStart && textData.backspace === true) { cursorStart--; cursorEnd--; }
 
   codeText.selectionStart = cursorStart;
   codeText.selectionEnd = cursorEnd;
