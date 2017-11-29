@@ -30,7 +30,15 @@ socket.on("runResults", (resultText) => {
 });
 
 setInterval(() => {
-  const key = String.fromCharCode(Math.floor(Math.random() * (90 - 65 + 1)) + 65);
+  const action = Math.floor(Math.random() * (10 - 1) + 1);
+  let key;
+
+  if (action === 9) {
+    key = "Enter";
+  }
+  else {
+    key = String.fromCharCode(Math.floor(Math.random() * (90 - 65 + 1)) + 65);
+  }
   
   const textData = { key: key, cursorPos: 0, line: 1 };   
   socket.emit("codeTextChange", textData);  

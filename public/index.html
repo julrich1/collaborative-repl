@@ -11,13 +11,20 @@
   <title>Collaborative Repl</title>
 </head>
 <body>
-  <textarea id="codeText" cols="30" rows="10" disabled></textarea>
+  <div class="lineNumbers">
+    <table class="lineNumbers">
+    </table>
+    <textarea id="codeText" cols="30" rows="10" disabled></textarea>    
+  </div>
+  
   <textarea id="runText" cols="30" rows="10" readonly="true"></textarea>  
   <button>Run</button>
-  <div class="codeWindow">
-    <div class="cursor"></div>
-    <div>
-      <span class="codeLine">Hello</span>
+  <div>
+    <div class="codeWindow">
+      <div class="cursor"></div>
+      <div>
+        <span class="codeLine">Hello</span>
+      </div>
     </div>
   </div>
 </body>

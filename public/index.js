@@ -27,12 +27,13 @@ function handleInput(e) {
     console.log(e);
     // console.log(getCursorPosition());
     sendKey(e.key);
+    drawLineNumbers();    
   }
 }
 
 function keydown(e) {
   keys[e.key] = true;
-  startPos = getCursorPosition();
+  startPos = getCursorPosition()
   startLine = getLineNumber();
 }
 
@@ -45,19 +46,24 @@ function keyup(e) {
       console.log("Backspace a position zero, skipping send.");
       return;
     }
-    sendKey("Backspace", codeText.selectionStart);
+    sendKey("Backspace");
+    drawLineNumbers();    
   }
 }
 
 function sendKey(key) {
   console.log(getLineNumber());
-  const textData = { key: event.key, cursorPos: getCursorPosition(), line: getLineNumber() }; 
+  const textData = { key: key, cursorPos: getCursorPosition(), line: getLineNumber() }; 
   console.log("Sending position: ", getCursorPosition(), "Sending line: ", getLineNumber());
   socket.emit("codeTextChange", textData);
 }
 
 function getLineNumber() {
   return codeText.value.substr(0, codeText.selectionStart).split("\n").length - 1;
+}
+
+function getMaxLines() {
+  return codeText.value.substr(0).split("\n").length - 1;
 }
 
 function getCursorPosition() {
@@ -87,10 +93,12 @@ runButton.addEventListener("click", () => {
 });
 
 socket.on("codeTextInit", (textArray) => {
-  codeText.value = "";
-  for (const line of textArray) {
-    codeText.value += line + "\n";
+  codeText.value = textArray[0];
+  for (let i = 1; i < textArray.length; i++) {
+    codeText.value += "\n" + textArray[i];
   }
+
+  drawLineNumbers();
 });
 
 socket.on("codeTextUpdate", (textData) => {
@@ -103,9 +111,9 @@ socket.on("codeTextUpdate", (textData) => {
   console.log("Modified line: ", textData.line);
   console.log("Current cursor line: ", getLineNumber());
 
-  codeText.value = "";
-  for (const line of textData.text) {
-    codeText.value += line + "\n";
+  codeText.value = textData.text[0];
+  for (let i = 1; i < textData.text.length; i++) {
+    codeText.value += "\n" + textData.text[i];
   }
 
   if (textData.line > currentLine) {
@@ -116,11 +124,12 @@ socket.on("codeTextUpdate", (textData) => {
     if (textData.updatePos < cursorStart && textData.backspace !== true) { cursorStart++; cursorEnd++; }
     if (textData.updatePos < cursorStart && textData.backspace === true) { cursorStart--; cursorEnd--; }    
   }
-  
+
   codeText.selectionStart = cursorStart;
   codeText.selectionEnd = cursorEnd;
 
-
+  drawLineNumbers();
+  
   // let cursorStart = codeText.selectionStart;
   // let cursorEnd = codeText.selectionEnd;
   
@@ -134,6 +143,23 @@ socket.on("codeTextUpdate", (textData) => {
   // codeText.selectionStart = cursorStart;
   // codeText.selectionEnd = cursorEnd;
 });
+
+function drawLineNumbers() {
+  const linesTable = document.querySelector("table");
+
+  while (linesTable.firstChild) {
+    linesTable.removeChild(linesTable.firstChild);
+  }
+  
+  for (let i = 0; i < getMaxLines(); i++) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.textContent = i + 1;
+
+    tr.appendChild(td);
+    linesTable.appendChild(tr);
+  }
+}
 
 socket.on("runResults", (resultText) => {
   runText.value = resultText;
