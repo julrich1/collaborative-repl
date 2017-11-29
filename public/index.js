@@ -47,8 +47,6 @@ function keyup(e) {
     }
     sendKey("Backspace", codeText.selectionStart);
   }
-  // console.log(getCursorPosition());  
-  
 }
 
 function sendKey(key) {
@@ -67,12 +65,9 @@ function getCursorPosition() {
   let characters = 0;
 
   const textArray = codeText.value.split("\n");
-// console.log("Text array", textArray);
   for (let i = 0; i < line; i++) {
-    // console.log(`Text Array of line ${i} length is: ${textArray[i].length}`);
     characters += textArray[i].length + 1; 
   }
-// console.log("Characters", characters, "Selection start: ", codeText.selectionStart);
   return codeText.selectionStart - characters;
 }
 
@@ -99,10 +94,32 @@ socket.on("codeTextInit", (textArray) => {
 });
 
 socket.on("codeTextUpdate", (textData) => {
+  let cursorStart = codeText.selectionStart;
+  let cursorEnd = codeText.selectionEnd;
+
+  const currentLine = getLineNumber(); 
+
+  console.log("Cursor start", cursorStart, textData.updatePos);
+  console.log("Modified line: ", textData.line);
+  console.log("Current cursor line: ", getLineNumber());
+
   codeText.value = "";
   for (const line of textData.text) {
     codeText.value += line + "\n";
   }
+
+  if (textData.line > currentLine) {
+    //Do nothing? 
+    console.log("Line is greater, do nothing"); 
+  }
+  else {
+    if (textData.updatePos < cursorStart && textData.backspace !== true) { cursorStart++; cursorEnd++; }
+    if (textData.updatePos < cursorStart && textData.backspace === true) { cursorStart--; cursorEnd--; }    
+  }
+  
+  codeText.selectionStart = cursorStart;
+  codeText.selectionEnd = cursorEnd;
+
 
   // let cursorStart = codeText.selectionStart;
   // let cursorEnd = codeText.selectionEnd;
