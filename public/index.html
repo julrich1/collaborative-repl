@@ -4,16 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+  <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
   <script defer src="index.js"></script>
 
   <title>Collaborative Repl</title>
 </head>
 <body>
-  <textarea id="codeText" cols="30" rows="10"></textarea>
+  <textarea id="codeText" cols="30" rows="10" disabled></textarea>
   <textarea id="runText" cols="30" rows="10" readonly="true"></textarea>  
-
   <button>Run</button>
+  <div class="codeWindow">
+    <div class="cursor"></div>
+    <div>
+      <span class="codeLine">Hello</span>
+    </div>
+  </div>
 </body>
 </html>

@@ -9,7 +9,7 @@ const fs = require("fs");
 
 const { spawn } = require("child_process");
 
-let codeText = "const a = 5; const b = 100; console.log(a+b);";
+let codeText = ["const a = 5;", "const b = 100;", "console.log(a+b);"];
 let node;
 
 app.use(express.static("public"));
@@ -78,14 +78,47 @@ http.listen(PORT, () => {
 // }
 
 function updateText(textData) {
-  console.log("textData: ", textData.key, textData.cursorPos);
-  // textData.key = convertKey(textData.key);
+  console.log("textData: ", textData.key, textData.cursorPos, textData.line);
+  // console.log("Codetext = ", codeText);
 
-  if (textData.key === "Backspace")
-    codeText = codeText.slice(0, textData.cursorPos) + codeText.slice(textData.cursorPos + 1);
+  if (!codeText[textData.line]) { codeText[textData.line] = ""; }
+  if (textData.key === "Backspace") {
+    if (textData.cursorPos === codeText[textData.line].length) {
+      // codeText[textData.line] 
+      codeText[textData.line] += codeText[textData.line + 1];
+      shiftUp(textData.line + 1);
+    }
+    else {
+      codeText[textData.line] = codeText[textData.line].slice(0, textData.cursorPos) + codeText[textData.line].slice(textData.cursorPos + 1);
+    }
+  }
   else if (textData.key === "Enter") {
-    codeText = codeText.slice(0, textData.cursorPos) + "\n" + codeText.slice(textData.cursorPos);
+    const newLineText = codeText[textData.line].slice(textData.cursorPos);
+    codeText[textData.line] = codeText[textData.line].slice(0, textData.cursorPos);
+    shiftDown(textData.line);
+    codeText[textData.line + 1] = newLineText;
   }
   else if (textData.key.length <= 1)
-    codeText = codeText.slice(0, textData.cursorPos) + textData.key + codeText.slice(textData.cursorPos);
+    codeText[textData.line] = codeText[textData.line].slice(0, textData.cursorPos) + textData.key + codeText[textData.line].slice(textData.cursorPos);
+}
+
+function shiftDown(lineNumber) {
+  console.log("CodeText before:", codeText);
+  for (let i = codeText.length; i > lineNumber; i--) {
+    codeText[i] = codeText[i - 1];
+  }
+
+  console.log("CodeText after:", codeText);
+}
+
+function shiftUp(lineNumber) {
+  console.log("CodeText before:", codeText, "Starting at lineNumber: ", lineNumber);
+  for (let i = lineNumber; i < codeText.length - 1; i++) {
+    console.log(`Replacing codeText ${codeText[i]} with ${codeText[i+1]}`);
+    codeText[i] = codeText[i + 1];
+  }
+
+  codeText.splice(codeText.length - 1, 1);
+
+  console.log("CodeText after:", codeText);
 }

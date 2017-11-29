@@ -1,0 +1,19 @@
+#codeText {
+  width: 500px;
+  height: 500px;
+}
+
+.codeWindow {
+  border: 1px solid black;
+}
+
+.codeLine {
+  border: 1px solid red;
+}
+
+.cursor {
+  position: absolute;
+  border: 1px solid grey;
+  width: 1px;
+  height: 16px;
+}
