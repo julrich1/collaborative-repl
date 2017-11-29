@@ -4,6 +4,8 @@ const codeText = document.querySelector("#codeText");
 const runText = document.querySelector("#runText");
 const runButton = document.querySelector("button");
 
+const codeWindow = new CodeWindow(document.querySelector("#codeWindow"));
+
 // codeText.addEventListener("keyup", (event) => {
 //   console.log("On keypress", event);
   
@@ -18,22 +20,29 @@ const keys = {};
 let startPos = 0;
 let startLine = 0;
 
-codeText.addEventListener("keydown", keydown, false);
-codeText.addEventListener("keypress", handleInput, false);
-codeText.addEventListener("keyup", keyup, false);
+window.addEventListener("keydown", keydown, false);
+window.addEventListener("keypress", handleInput, false);
+window.addEventListener("keyup", keyup, false);
 
 function handleInput(e) {
   if (keys[e.key]) {
-    console.log(e);
-    // console.log(getCursorPosition());
-    sendKey(e.key);
-    drawLineNumbers();    
+    // if (e.key === "Enter") {
+    //   codeWindow.currentLine++;
+    //   sendKey(e.key);      
+    // }
+    // else {
+    //   codeWindow.processInput(e.key, codeWindow.currentLine);
+    //   sendKey(e.key);
+    // }
+    
+    codeWindow.processInput(e.key, codeWindow.currentLine, codeWindow.cursorPosition);
+    // drawLineNumbers();    
   }
 }
 
 function keydown(e) {
   keys[e.key] = true;
-  startPos = getCursorPosition()
+  startPos = getCursorPosition();
   startLine = getLineNumber();
 }
 
@@ -46,11 +55,16 @@ function keyup(e) {
       console.log("Backspace a position zero, skipping send.");
       return;
     }
+    codeWindow.processInput(e.key, codeWindow.currentLine, codeWindow.cursorPosition);
     sendKey("Backspace");
-    drawLineNumbers();    
+    // drawLineNumbers();    
+  }
+  else {
+    console.log("Key was ", e.key);
+    codeWindow.processInput(e.key, codeWindow.currentLine, codeWindow.cursorPosition);    
   }
 }
-
+ 
 function sendKey(key) {
   console.log(getLineNumber());
   const textData = { key: key, cursorPos: getCursorPosition(), line: getLineNumber() }; 
@@ -93,12 +107,13 @@ runButton.addEventListener("click", () => {
 });
 
 socket.on("codeTextInit", (textArray) => {
-  codeText.value = textArray[0];
-  for (let i = 1; i < textArray.length; i++) {
-    codeText.value += "\n" + textArray[i];
-  }
+  codeWindow.initializeInput(textArray);
+  // codeText.value = textArray[0];
+  // for (let i = 1; i < textArray.length; i++) {
+  //   codeText.value += "\n" + textArray[i];
+  // }
 
-  drawLineNumbers();
+  // drawLineNumbers();
 });
 
 socket.on("codeTextUpdate", (textData) => {
@@ -128,38 +143,25 @@ socket.on("codeTextUpdate", (textData) => {
   codeText.selectionStart = cursorStart;
   codeText.selectionEnd = cursorEnd;
 
-  drawLineNumbers();
-  
-  // let cursorStart = codeText.selectionStart;
-  // let cursorEnd = codeText.selectionEnd;
-  
-  // console.log("Cursor start", cursorStart, textData.updatePos);
-
-  // codeText.value = textData.text;
-
-  // if (textData.updatePos < cursorStart && textData.backspace !== true) { cursorStart++; cursorEnd++; }
-  // if (textData.updatePos < cursorStart && textData.backspace === true) { cursorStart--; cursorEnd--; }
-
-  // codeText.selectionStart = cursorStart;
-  // codeText.selectionEnd = cursorEnd;
+  // drawLineNumbers();
 });
 
-function drawLineNumbers() {
-  const linesTable = document.querySelector("table");
+// function drawLineNumbers() {
+//   const linesTable = document.querySelector("table");
 
-  while (linesTable.firstChild) {
-    linesTable.removeChild(linesTable.firstChild);
-  }
+//   while (linesTable.firstChild) {
+//     linesTable.removeChild(linesTable.firstChild);
+//   }
   
-  for (let i = 0; i < getMaxLines(); i++) {
-    const tr = document.createElement("tr");
-    const td = document.createElement("td");
-    td.textContent = i + 1;
+//   for (let i = 0; i < getMaxLines(); i++) {
+//     const tr = document.createElement("tr");
+//     const td = document.createElement("td");
+//     td.textContent = i + 1;
 
-    tr.appendChild(td);
-    linesTable.appendChild(tr);
-  }
-}
+//     tr.appendChild(td);
+//     linesTable.appendChild(tr);
+//   }
+// }
 
 socket.on("runResults", (resultText) => {
   runText.value = resultText;

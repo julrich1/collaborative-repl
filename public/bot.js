@@ -42,4 +42,4 @@ setInterval(() => {
   
   const textData = { key: key, cursorPos: 0, line: 1 };   
   socket.emit("codeTextChange", textData);  
-}, 500);
+}, 100);

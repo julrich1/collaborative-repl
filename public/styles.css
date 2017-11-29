@@ -85,3 +85,7 @@ td {
   padding: 0px;
   line-height: normal;
 }
+
+span {
+  display: block;
+}
